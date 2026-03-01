@@ -63,14 +63,17 @@ cd cadence
 pip3 install -r requirements.txt
 ```
 
-### 3. Set up your API Key
+### 3. Set enviornment variables
 
-Create a `.env` file in the root directory:
-
-```
-API_KEY=your_groq_api_key_here
-```
 Get a free API key at [console.groq.com](https://console.groq.com)
+
+Copy the template file
+
+```bash
+cp .env.example .env
+```
+Open .env and replace your_groq_api_key_here with your actual key.
+
 
 ### 4. Run the app
 

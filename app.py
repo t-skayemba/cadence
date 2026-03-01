@@ -3,6 +3,7 @@ from datetime import datetime
 import uuid
 import json
 import os
+import sys
 
 app = Flask(__name__)
 app.secret_key = 'cadence-secret-key'
@@ -291,5 +292,8 @@ def demo_mode():
     return redirect(f'/profile/{profile.id}')
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port, debug=True)

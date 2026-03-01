@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = Groq(api_key=os.environ.get('API_KEY'))
+GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama3-8b-8192')
 
 CLASSIFICATION_RULES = """
 CLASSIFICATION RULES:
@@ -93,7 +94,7 @@ Health metrics:
 {JSON_STRUCTURE}"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model=GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1
     )
@@ -207,7 +208,7 @@ Set confidence to 0.40–0.65 max.
 {JSON_STRUCTURE}"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model=GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1
     )
@@ -291,7 +292,7 @@ Provide a helpful low_confidence_explanation acknowledging both data sources wer
 {JSON_STRUCTURE}"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model=GROQ_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1
     )
@@ -374,7 +375,7 @@ def chat_response(message, profile, history, user_tz):
     messages.append({"role": "user", "content": message})
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model=GROQ_MODEL,
         messages=messages,
         temperature=0.3
     )
