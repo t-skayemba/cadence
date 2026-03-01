@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = Groq(api_key=os.environ.get('API_KEY'))
-GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama3-8b-8192')
+GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama-3.1-8b-instant')
 
 CLASSIFICATION_RULES = """
 CLASSIFICATION RULES:
