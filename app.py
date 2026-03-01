@@ -121,8 +121,9 @@ def chat():
     message = data.get('message')
     profile_data = data.get('profile')
     history = data.get('history', [])
+    user_tz = data.get('timezone', 'EST')
 
-    response = chat_response(message, profile_data, history)
+    response = chat_response(message, profile_data, history, user_tz)
     return jsonify({'response': response})
 
 @app.route('/chronotypes')

@@ -984,6 +984,7 @@
       if (!input) return;
       const message = input.value.trim();
       if (!message) return;
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions.timeZone;
       input.value = '';
       appendMessage('user', message);
       chatHistory.push({ role: 'user', content: message });
@@ -1012,7 +1013,8 @@
             low_confidence: {{ 'true' if profile.low_confidence else 'false' }},
             low_confidence_explanation: "{{ profile.low_confidence_explanation | replace('"', '\\"') }}"
           },
-          history: chatHistory
+          history: chatHistory,
+          timezone: userTimezone
         })
       });
       const data = await res.json();

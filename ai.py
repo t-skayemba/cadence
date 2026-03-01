@@ -300,10 +300,16 @@ Provide a helpful low_confidence_explanation acknowledging both data sources wer
     return result
 
 
-def chat_response(message, profile, history):
+def chat_response(message, profile, history, user_tz):
+    import pytz
     from datetime import datetime
 
-    current_time_string = datetime.now().strftime('%I:%M %p')
+    try:
+        local_tz = pytz.timezone(user_tz)
+    except:
+        local_tz = pytz.est
+    current_time_obj = datetime.now(local_tz)
+    current_time_string = current_time_obj.now().strftime('%I:%M %p')
 
     is_quiz = profile.get('quiz_based') or profile.get('avg_duration') == 0
     is_low_conf = profile.get('low_confidence') or profile.get('is_low_confidence')
