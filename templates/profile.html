@@ -537,6 +537,20 @@
 
     .section { padding: 56px 40px; }
 
+    @media (max-width: 768px) {
+        .hero {
+            display: flex;
+            flex-direction: column-reverse; /* This puts the image on top on mobile */
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .hero-right img {
+            width: 200px; /* Forces a good size on mobile */
+            margin-bottom: 20px;
+        }
+    }
+
   </style>
 </head>
 
@@ -564,33 +578,44 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="hero-left">
-      <div class="hero-stats">
+    <section class="hero flex flex-col-reverse md:flex-row items-center justify-between">    <div class="hero-left w-full md:w-1/2">
+        <div class="hero-stats grid grid-cols-1 gap-4">
         <div>
-          <p class="hero-stat-label">Chronotype</p>
-          <p class="hero-stat-value">{{ profile.chronotype }}</p>
+            <p class="hero-stat-label">Chronotype</p>
+            <p class="hero-stat-value text-2xl">{{ profile.chronotype }}</p>
         </div>
         <div>
-          <p class="hero-stat-label">Peak Focus Window</p>
-          <p class="hero-stat-value">{{ profile.peak_focus_window }}</p>
+            <p class="hero-stat-label">Peak Focus Window</p>
+            <p class="hero-stat-value text-2xl">{{ profile.peak_focus_window }}</p>
         </div>
         <div>
-          <p class="hero-stat-label">Recommended Bedtime</p>
-          <p class="hero-stat-value">{{ profile.recommended_bedtime }}</p>
+            <p class="hero-stat-label">Recommended Bedtime</p>
+            <p class="hero-stat-value text-2xl">{{ profile.recommended_bedtime }}</p>
         </div>
-        <div class="mb-6 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] inline-block">
-          <div class="flex items-center gap-4">
+        
+        <div class="mb-6 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] inline-block w-fit">
+            <div class="flex items-center gap-4">
             <div id="liveClock" class="text-3xl font-mono font-bold text-[var(--accent)] tracking-tighter">00:00</div>
             <div class="w-[1px] h-10 bg-[var(--border)]"></div>
             <div>
-              <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] font-bold">Current Phase</p>
-              <p id="currentPhase" class="text-sm font-semibold text-[var(--text)]">Synchronizing...</p>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] font-bold">Current Phase</p>
+                <p id="currentPhase" class="text-sm font-semibold text-[var(--text)]">Synchronizing...</p>
             </div>
-          </div>
+            </div>
         </div>
-      </div>
+        </div>
     </div>
+
+    <div class="hero-right w-full md:w-1/2 flex flex-col items-center justify-center gap-6">
+        <div class="confidence-circle">
+        <span class="confidence-number" id="confNum">0%</span>
+        <span class="confidence-label">Confidence</span>
+        </div>
+        <img src="/static/{{ profile.chronotype | lower }}.png" 
+            alt="{{ profile.chronotype }}" 
+            class="w-48 h-48 md:w-64 md:h-64 object-contain" />
+    </div>
+    </section>
 
     <div class="hero-right">
       <div class="confidence-circle">
