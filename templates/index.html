@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cadence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap');
+
+      body {
+        background-color: #FDFBF7;
+        /* Changed these to allow vertical stacking and scrolling */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column; 
+        margin: 0;
+      }
+
+      /* This container takes up all available space, centering the hero content */
+      .hero-container {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 80px 20px;
+      }
+
+      #wordmark {
+        font-family: 'Cormorant Garamond', serif;
+        color: #2C2A28;
+        font-size: 7rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .tagline {
+        font-family: 'Inter', sans-serif;
+        color: #64748B;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards;
+        animation-delay: 0.8s;
+      }
+
+      .cta {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards;
+        animation-delay: 1.4s;
+      }
+
+      .secondary-link {
+        color: #64748B;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+      }
+
+      .secondary-link:hover {
+        color: #F59E0B;
+        border-bottom-color: #F59E0B;
+      }
+
+      @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .cta-btn {
+        background: transparent;
+        border: 1px solid #F59E0B;
+        color: #F59E0B;
+        padding: 14px 36px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .cta-btn:hover {
+        background: linear-gradient(135deg, #FBBF24, #F59E0B);
+        color: white;
+        box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
+        transform: translateY(-2px);
+      }
+
+      .demo-link {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #94A3B8;
+        text-decoration: none;
+        transition: color 0.2s;
+        opacity: 0.6;
+      }
+      
+      .demo-link:hover {
+        color: #F59E0B;
+        opacity: 1;
+      }
+    .built-by-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .built-by-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .built-by-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .built-by-link:hover .built-by-inner::before {
+      left: 100%;
+    }
+
+    .built-by-link:hover .built-by-inner {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .built-by-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .built-by-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    .built-by-link:hover .built-by-text {
+      color: var(--accent);
+    }
+    </style>
+  </head>
+  <body>
+    <header style="position: absolute; top: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        <a href="/" style="font-family: 'Cormorant Garamond', serif; color: #2C2A28; font-weight: 800; font-size: 1.4rem; text-decoration: none;">Cadence</a>
+        <a href="/chronotypes" style="font-family: 'Inter', sans-serif; color: #64748B; text-decoration: none; font-size: 0.9rem; font-weight: 500;">Learn About Chronotypes</a>
+    </header>
+
+    <div class="hero-container">
+      <h1 id="wordmark">Cadence</h1>
+
+      <p class="tagline text-lg font-light mb-12" style="letter-spacing: 0.02em;">
+        Your phone has been tracking your body for years.<br>
+        It's time to listen.
+      </p>
+
+      <div class="cta" style="display: flex; gap: 16px; justify-content: center; align-items: center;">
+        <a href="/upload" class="cta-btn">Discover Your Rhythm &nbsp;→</a>
+        <a href="/chronotypes" style="color: #64748B; text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#F59E0B'" onmouseout="this.style.color='#64748B'">View All Types</a>
+      </div>
+      <p class="tagline" style="margin-top: 24px; font-size: 0.85rem; animation-delay: 1.8s;">
+        No Apple Health? 
+        <a href="/quiz" class="secondary-link">Take the manual quiz instead →</a>
+      </p>
+    </div>
+
+    <footer style="padding: 60px 40px; border-top: 1px solid rgba(44, 42, 40, 0.08); background-color: #FDFBF7;">
+        <div style="max-width: 1000px; margin: 0 auto; position: relative; display: flex; flex-direction: column; align-items: center;">
+            
+            <p style="font-size: 11px; color: #7a746e; max-width: 600px; margin-bottom: 24px; line-height: 1.6; text-align: center;">
+                <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+            </p>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%;">
+                <span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: #2c2a28;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e;"></span> Supports Apple Health
+                </span>
+                <span style="color: #7a746e; font-size: 12px;">•</span>
+                <span style="color: #7a746e; font-size: 12px;">Samsung & Google Fit Soon</span>
+                
+                <a href="/demo" class="demo-link" style="position: absolute; right: 0; bottom: 0;">Sample Report</a>
+            </div>
+        </div>
+        <div class="mt-8 flex items-center justify-center">
+            <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+                <span class="built-by-inner">
+                <span class="built-by-dot"></span>
+                <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+                </span>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+      setTimeout(() => {
+        const el = document.getElementById('wordmark');
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        el.style.transform = 'translateY(0)';
+        el.style.opacity = '1';
+      }, 200);
+    </script>
+  </body>
+</html>

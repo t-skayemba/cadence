@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadence - Chronotypes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+
+    body { background-color: #f6f2eb; color: #2c2a28; margin: 0; }
+
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(44,42,40,0.12);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: #2c2a28;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+    }
+
+    .header-nav a {
+      color: #7a746e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-left: 24px;
+      transition: color 0.2s;
+    }
+
+    .header-nav a:hover { color: #e38b4f; }
+
+    .hero {
+      padding: 80px 40px 60px;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #2c2a28;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: #7a746e;
+      line-height: 1.7;
+    }
+
+    .chronotype-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      background: rgba(44,42,40,0.08);
+      border-top: 1px solid rgba(44,42,40,0.08);
+    }
+
+    .chronotype-card {
+      padding: 60px 56px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .chronotype-card:hover { transform: scale(1.01); z-index: 2; }
+
+    .lion-card { background: #efecdd; }
+    .bear-card { background: #ece6d8; }
+    .wolf-card { background: #e2e4f0; }
+    .dolphin-card { background: #ddeef4; }
+
+    .animal-img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      float: right;
+      margin-left: 32px;
+      margin-bottom: 16px;
+    }
+
+    .chrono-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .lion-tag { background: rgba(217,119,6,0.12); color: #d97706; }
+    .bear-tag { background: rgba(95,125,78,0.12); color: #5f7d4e; }
+    .wolf-tag { background: rgba(76,79,143,0.12); color: #4c4f8f; }
+    .dolphin-tag { background: rgba(63,143,168,0.12); color: #3f8fa8; }
+
+    .chrono-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .lion-name { color: #3b2a12; }
+    .bear-name { color: #2e3a2a; }
+    .wolf-name { color: #2b2c40; }
+    .dolphin-name { color: #24333a; }
+
+    .chrono-subtitle {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .lion-subtitle { color: #d97706; }
+    .bear-subtitle { color: #5f7d4e; }
+    .wolf-subtitle { color: #4c4f8f; }
+    .dolphin-subtitle { color: #3f8fa8; }
+
+    .chrono-desc {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      margin-bottom: 28px;
+      clear: both;
+    }
+
+    .lion-desc { color: #6b4c1e; }
+    .bear-desc { color: #3d5236; }
+    .wolf-desc { color: #3b3d60; }
+    .dolphin-desc { color: #2d4a55; }
+
+    .stat-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .stat-item { flex: 1; }
+
+    .stat-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .lion-stat { color: #3b2a12; }
+    .lion-muted { color: #a16207; }
+    .bear-stat { color: #2e3a2a; }
+    .bear-muted { color: #6b7c64; }
+    .wolf-stat { color: #2b2c40; }
+    .wolf-muted { color: #6b6c85; }
+    .dolphin-stat { color: #24333a; }
+    .dolphin-muted { color: #5c7680; }
+
+    .traits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .trait {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .lion-trait { background: rgba(217,119,6,0.1); color: #92400e; }
+    .bear-trait { background: rgba(95,125,78,0.1); color: #3d6b38; }
+    .wolf-trait { background: rgba(76,79,143,0.1); color: #3730a3; }
+    .dolphin-trait { background: rgba(63,143,168,0.1); color: #0e7490; }
+
+    .famous {
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: rgba(44,42,40,0.08);
+      margin: 0 40px;
+    }
+
+    .population-section {
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .population-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: #2c2a28;
+    }
+
+    .pop-bars {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 32px;
+      height: 160px;
+      margin-top: 80px;
+      margin-bottom: 20px;
+    }
+
+    .pop-bar-wrap { text-align: center; width: 100px; }
+
+    .pop-bar {
+      border-radius: 8px 8px 0 0;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+
+    .pop-bar:hover { opacity: 0.8; }
+
+    .pop-label { font-size: 0.75rem; font-weight: 600; margin-top: 8px; }
+    .pop-pct { font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
+
+    .cta-section {
+      padding: 80px 40px;
+      text-align: center;
+      background: #ffffff;
+    }
+
+    .cta-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #2c2a28;
+    }
+
+    .cta-section p { color: #7a746e; margin-bottom: 32px; font-size: 1rem; }
+
+    .cta-btn {
+      background: #e38b4f;
+      color: white;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .cta-btn:hover {
+      background: #cf7638;
+      box-shadow: 0 8px 24px rgba(227,139,79,0.3);
+      transform: translateY(-2px);
+    }
+    /* Custom Animal Cursors on Hover */
+    .lion-card:hover { 
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🦁</text></svg>") 16 16, auto; 
+    }
+
+    .bear-card:hover { 
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐻</text></svg>") 16 16, auto; 
+    }
+
+    .wolf-card:hover { 
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐺</text></svg>") 16 16, auto; 
+    }
+
+    .dolphin-card:hover { 
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐬</text></svg>") 16 16, auto; 
+    }
+
+        .built-by-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .built-by-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .built-by-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .built-by-link:hover .built-by-inner::before {
+      left: 100%;
+    }
+
+    .built-by-link:hover .built-by-inner {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .built-by-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .built-by-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    .built-by-link:hover .built-by-text {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Cadence</a>
+    <nav class="header-nav">
+      {% if profile %}
+        <a href="/profile/{{ profile.id }}">← Back to My Profile</a>
+      {% else %}
+        <a href="/">Home</a>
+      {% endif %}
+      <a href="/chronotypes">Chronotypes</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>The Four Chronotypes</h1>
+    <p>Your chronotype is your biological clock — the genetic blueprint that determines when you naturally want to sleep, wake, and perform your best. Understanding it is the first step to working with your body instead of against it.</p>
+  </div>
+
+  <div class="chronotype-grid">
+
+    <!-- LION -->
+    <div class="chronotype-card lion-card">
+      <img src="/static/lion.png" alt="Lion" class="animal-img" />
+      <div class="chrono-tag lion-tag">Early Riser</div>
+      <h2 class="chrono-name lion-name">Lion</h2>
+      <p class="chrono-subtitle lion-subtitle">The driven early bird — 15% of the population</p>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <p class="stat-label lion-muted">Natural Wake</p>
+          <p class="stat-value lion-stat">5:00 – 6:30 AM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label lion-muted">Peak Hours</p>
+          <p class="stat-value lion-stat">5:00 – 10:00 AM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label lion-muted">Natural Bedtime</p>
+          <p class="stat-value lion-stat">9:00 – 10:30 PM</p>
+        </div>
+      </div>
+
+      <p class="chrono-desc lion-desc">Lions are the high achievers of the chronotype world. They wake before dawn feeling energized and hit peak cognitive performance in the early morning hours. By evening they fade quickly — social events past 9pm feel like a chore. Their biggest risk is burning out by pushing too hard in the morning without adequate rest.</p>
+
+      <div class="traits">
+        <span class="trait lion-trait">Natural leader</span>
+        <span class="trait lion-trait">Morning exerciser</span>
+        <span class="trait lion-trait">Goal-oriented</span>
+        <span class="trait lion-trait">Fades by 9pm</span>
+        <span class="trait lion-trait">Proactive</span>
+        <span class="trait lion-trait">Low social energy at night</span>
+      </div>
+
+      <p class="famous lion-muted">Lions work best with: early morning deep work blocks, exercise before 8am, social commitments before 7pm.</p>
+    </div>
+
+    <!-- BEAR -->
+    <div class="chronotype-card bear-card">
+      <img src="/static/bear.png" alt="Bear" class="animal-img" />
+      <div class="chrono-tag bear-tag">Solar-Aligned</div>
+      <h2 class="chrono-name bear-name">Bear</h2>
+      <p class="chrono-subtitle bear-subtitle">The sociable middle ground — 50% of the population</p>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <p class="stat-label bear-muted">Natural Wake</p>
+          <p class="stat-value bear-stat">7:00 – 8:00 AM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label bear-muted">Peak Hours</p>
+          <p class="stat-value bear-stat">10:00 AM – 2:00 PM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label bear-muted">Natural Bedtime</p>
+          <p class="stat-value bear-stat">10:30 – 11:30 PM</p>
+        </div>
+      </div>
+
+      <p class="chrono-desc bear-desc">Bears follow the solar cycle most closely. They represent the majority of the population and are the reason the 9-5 workday was designed the way it is. They're sociable, good-natured, and hit their stride mid-morning. The afternoon slump around 2-3pm is very real for Bears and is a biological certainty, not a caffeine deficiency.</p>
+
+      <div class="traits">
+        <span class="trait bear-trait">Solar-aligned rhythm</span>
+        <span class="trait bear-trait">Sociable</span>
+        <span class="trait bear-trait">Consistent sleeper</span>
+        <span class="trait bear-trait">Afternoon dip at 2pm</span>
+        <span class="trait bear-trait">Collaborative</span>
+        <span class="trait bear-trait">Mid-morning peak</span>
+      </div>
+
+      <p class="famous bear-muted">Bears work best with: morning meetings, deep work 10am–12pm, light work after 3pm, consistent bedtimes.</p>
+    </div>
+
+    <!-- WOLF -->
+    <div class="chronotype-card wolf-card">
+      <img src="/static/wolf.png" alt="Wolf" class="animal-img" />
+      <div class="chrono-tag wolf-tag">Night Owl</div>
+      <h2 class="chrono-name wolf-name">Wolf</h2>
+      <p class="chrono-subtitle wolf-subtitle">The creative night thinker — 15% of the population</p>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <p class="stat-label wolf-muted">Natural Wake</p>
+          <p class="stat-value wolf-stat">8:00 – 9:30 AM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label wolf-muted">Peak Hours</p>
+          <p class="stat-value wolf-stat">7:00 PM – 12:00 AM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label wolf-muted">Natural Bedtime</p>
+          <p class="stat-value wolf-stat">12:00 – 1:30 AM</p>
+        </div>
+      </div>
+
+      <p class="chrono-desc wolf-desc">Wolves are the creative night owls who come alive after dark. Their peak cognitive hours are in the evening — they do their best thinking, writing, and problem-solving when the rest of the world is winding down. Forced into 9-5 schedules, Wolves operate in a constant state of social jet lag, which takes a measurable toll on their health over time.</p>
+
+      <div class="traits">
+        <span class="trait wolf-trait">Creative thinker</span>
+        <span class="trait wolf-trait">Night energy</span>
+        <span class="trait wolf-trait">Introvert-leaning</span>
+        <span class="trait wolf-trait">Groggy mornings</span>
+        <span class="trait wolf-trait">Risk-taking</span>
+        <span class="trait wolf-trait">Impulsive</span>
+      </div>
+
+      <p class="famous wolf-muted">Wolves work best with: delayed start times, creative work after 5pm, avoiding early morning obligations.</p>
+    </div>
+
+    <!-- DOLPHIN -->
+    <div class="chronotype-card dolphin-card">
+      <img src="/static/dolphin.png" alt="Dolphin" class="animal-img" />
+      <div class="chrono-tag dolphin-tag">Light Sleeper</div>
+      <h2 class="chrono-name dolphin-name">Dolphin</h2>
+      <p class="chrono-subtitle dolphin-subtitle">The alert insomniac — 10% of the population</p>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <p class="stat-label dolphin-muted">Natural Wake</p>
+          <p class="stat-value dolphin-stat">Irregular</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label dolphin-muted">Peak Hours</p>
+          <p class="stat-value dolphin-stat">10:00 AM – 2:00 PM</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label dolphin-muted">Natural Bedtime</p>
+          <p class="stat-value dolphin-stat">Midnight – 1:00 AM</p>
+        </div>
+      </div>
+
+      <p class="chrono-desc dolphin-desc">Dolphins are light, fitful sleepers who rarely feel fully rested. Named after dolphins who sleep with one hemisphere at a time to stay alert to danger, this type tends to be highly intelligent, anxious, and detail-oriented. They struggle with consistent sleep timing and often experience racing thoughts at bedtime. Their best cognitive window is a narrow mid-morning peak.</p>
+
+      <div class="traits">
+        <span class="trait dolphin-trait">Detail-oriented</span>
+        <span class="trait dolphin-trait">Light sleeper</span>
+        <span class="trait dolphin-trait">High anxiety</span>
+        <span class="trait dolphin-trait">Intelligent</span>
+        <span class="trait dolphin-trait">Perfectionist</span>
+        <span class="trait dolphin-trait">Irregular rhythm</span>
+      </div>
+
+      <p class="famous dolphin-muted">Dolphins work best with: strict sleep hygiene, consistent wind-down routines, avoiding screens 2 hours before bed.</p>
+    </div>
+
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="population-section">
+    <h2>Population Distribution</h2>
+    <div class="pop-bars">
+      <div class="pop-bar-wrap">
+        <div class="pop-bar" style="height: 60px; background: #d97706;"></div>
+        <p class="pop-label" style="color: #d97706;">Lion</p>
+        <p class="pop-pct" style="color: #3b2a12;">15%</p>
+      </div>
+      <div class="pop-bar-wrap">
+        <div class="pop-bar" style="height: 160px; background: #5f7d4e;"></div>
+        <p class="pop-label" style="color: #5f7d4e;">Bear</p>
+        <p class="pop-pct" style="color: #2e3a2a;">50%</p>
+      </div>
+      <div class="pop-bar-wrap">
+        <div class="pop-bar" style="height: 60px; background: #4c4f8f;"></div>
+        <p class="pop-label" style="color: #4c4f8f;">Wolf</p>
+        <p class="pop-pct" style="color: #2b2c40;">15%</p>
+      </div>
+      <div class="pop-bar-wrap">
+        <div class="pop-bar" style="height: 40px; background: #3f8fa8;"></div>
+        <p class="pop-label" style="color: #3f8fa8;">Dolphin</p>
+        <p class="pop-pct" style="color: #24333a;">10%</p>
+      </div>
+    </div>
+    <p style="color: #7a746e; font-size: 0.85rem;">Percentages reflect general population estimates. Remaining ~10% fall between types or shift over time.</p>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="chronotype-card" style="grid-column: span 2; background: #fdfaf3; border-top: 1px solid rgba(44,42,40,0.08);">
+      <div class="chrono-tag" style="background: rgba(227,139,79,0.12); color: #e38b4f;">Rhythm Variation</div>
+      <h2 class="chrono-name" style="color: #2c2a28;">Biphasic Sleep</h2>
+      <p class="chrono-subtitle" style="color: #e38b4f;">The Power Napper — A Natural Ancestral Pattern</p>
+      <p class="chrono-desc" style="color: #7a746e;">Biphasic sleep isn't a separate animal, but a way of structuring your day. Instead of one long 8-hour block, your body prefers a "Siesta" pattern: a slightly shorter night sleep plus a 20–90 minute afternoon nap. This was the standard for much of human history before the industrial revolution.</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="cta-section">
+    <h2>Which one are you?</h2>
+    <p>Upload your Apple Health data and Cadence will analyze your actual biometric patterns to find your true chronotype.</p>
+    <a href="/upload" class="cta-btn">Discover Your Rhythm →</a>
+  </div>
+<footer class="mt-20 py-12 px-10 border-t border-[var(--border)] text-center">
+    <p class="text-[11px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+        <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-4">
+        <span class="flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span> Supports Apple Health
+        </span>
+        <span class="text-xs text-[var(--muted)]">•</span>
+        <span class="text-xs text-[var(--muted)]">Samsung Health & Google Fit Coming Soon!</span>
+    </div>
+    <div class="mt-8 flex items-center justify-center">
+      <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+        <span class="built-by-inner">
+          <span class="built-by-dot"></span>
+          <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+        </span>
+      </a>
+    </div>
+</footer>
+</body>
+</html>

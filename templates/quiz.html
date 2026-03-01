@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadence - Discover Your Chronotype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600;700&display=swap');
+
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f6f2eb;
+      color: #2c2a28;
+      min-height: 100vh;
+    }
+
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(44,42,40,0.12);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: #2c2a28;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+    }
+
+    .header-nav a {
+      color: #7a746e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-left: 24px;
+      transition: color 0.2s;
+    }
+
+    .header-nav a:hover { color: #e38b4f; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      padding: 32px 40px 0;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #7a746e;
+    }
+
+    .progress-bar-outer {
+      height: 3px;
+      background: rgba(44,42,40,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      background: #e38b4f;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* ── QUIZ CONTAINER ── */
+    .quiz-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    /* ── STEP ── */
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-section-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e38b4f;
+      margin-bottom: 10px;
+    }
+
+    .step-question {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c2a28;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .step-sub {
+      font-size: 0.88rem;
+      color: #7a746e;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    /* ── OPTION CARDS ── */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .option {
+      background: #ffffff;
+      border: 1.5px solid rgba(44,42,40,0.12);
+      border-radius: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .option:hover {
+      border-color: #e38b4f;
+      background: #fffaf6;
+      transform: translateX(4px);
+    }
+
+    .option.selected {
+      border-color: #e38b4f;
+      background: rgba(227,139,79,0.06);
+    }
+
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(44,42,40,0.2);
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option.selected .option-radio {
+      border-color: #e38b4f;
+      background: #e38b4f;
+    }
+
+    .option.selected .option-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .option-emoji {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #2c2a28;
+      line-height: 1.4;
+    }
+
+    .option-sub {
+      font-size: 0.78rem;
+      color: #7a746e;
+      margin-top: 2px;
+    }
+
+    /* ── NAVIGATION ── */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-back {
+      background: none;
+      border: 1.5px solid rgba(44,42,40,0.15);
+      color: #7a746e;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      border-color: #2c2a28;
+      color: #2c2a28;
+    }
+
+    .btn-next {
+      background: #e38b4f;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-next.enabled {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-next.enabled:hover {
+      background: #cf7638;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(227,139,79,0.3);
+    }
+
+    .btn-submit {
+      background: #2c2a28;
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-submit.enabled {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-submit.enabled:hover {
+      background: #1a1816;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(44,42,40,0.25);
+    }
+
+    /* ── LOADING ── */
+    .loading-wrap {
+      display: none;
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    .loading-wrap.active { display: block; }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(227,139,79,0.2);
+      border-top-color: #e38b4f;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c2a28;
+      margin-bottom: 8px;
+    }
+
+    .loading-sub {
+      font-size: 0.88rem;
+      color: #7a746e;
+    }
+
+        .built-by-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .built-by-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .built-by-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .built-by-link:hover .built-by-inner::before {
+      left: 100%;
+    }
+
+    .built-by-link:hover .built-by-inner {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .built-by-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .built-by-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    .built-by-link:hover .built-by-text {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Cadence</a>
+    <nav class="header-nav">
+      <a href="/upload">Have Apple Health data?</a>
+    </nav>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">Discovering your chronotype</span>
+      <span class="progress-label" id="progressText">1 of 11</span>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-wrap" id="quizWrap">
+
+    <!-- Q1 -->
+    <div class="step active" data-step="1">
+      <p class="step-section-label">Sleep Timing</p>
+      <h2 class="step-question">Without an alarm, when do you naturally wake up?</h2>
+      <p class="step-sub">Think about a week with no obligations — your body's honest preference.</p>
+      <div class="options">
+        <div class="option" data-value="before_6am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌅</span>
+          <div><p class="option-text">Before 6:00 AM</p><p class="option-sub">I'm up before most people even set their alarm</p></div>
+        </div>
+        <div class="option" data-value="6_to_7am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">☀️</span>
+          <div><p class="option-text">6:00 – 7:00 AM</p><p class="option-sub">Early but not extreme</p></div>
+        </div>
+        <div class="option" data-value="7_to_8am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌤️</span>
+          <div><p class="option-text">7:00 – 8:00 AM</p><p class="option-sub">Solidly morning person</p></div>
+        </div>
+        <div class="option" data-value="8_to_9am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">⛅</span>
+          <div><p class="option-text">8:00 – 9:00 AM</p><p class="option-sub">Late-ish mornings feel natural</p></div>
+        </div>
+        <div class="option" data-value="after_9am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌙</span>
+          <div><p class="option-text">After 9:00 AM</p><p class="option-sub">Morning is not my time</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <div></div>
+        <button class="btn-next" id="next-1">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="step" data-step="2">
+      <p class="step-section-label">Sleep Timing</p>
+      <h2 class="step-question">When do you naturally feel ready for sleep?</h2>
+      <p class="step-sub">When your body actually wants to sleep — not when you force yourself to.</p>
+      <div class="options">
+        <div class="option" data-value="before_9pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌆</span>
+          <div><p class="option-text">Before 9:00 PM</p><p class="option-sub">I'm fading fast by evening</p></div>
+        </div>
+        <div class="option" data-value="9_to_10pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌇</span>
+          <div><p class="option-text">9:00 – 10:00 PM</p><p class="option-sub">Early evening wind-down</p></div>
+        </div>
+        <div class="option" data-value="10_to_11pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌃</span>
+          <div><p class="option-text">10:00 – 11:00 PM</p><p class="option-sub">Average bedtime range</p></div>
+        </div>
+        <div class="option" data-value="11pm_to_1am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌉</span>
+          <div><p class="option-text">11:00 PM – 1:00 AM</p><p class="option-sub">I get a second wind late at night</p></div>
+        </div>
+        <div class="option" data-value="after_1am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌌</span>
+          <div><p class="option-text">After 1:00 AM</p><p class="option-sub">The night is when I come alive</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-2">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="step" data-step="3">
+      <p class="step-section-label">Sleep Timing</p>
+      <h2 class="step-question">How many hours do you typically sleep?</h2>
+      <p class="step-sub">On a normal night — not your best or worst.</p>
+      <div class="options">
+        <div class="option" data-value="less_than_5">
+          <div class="option-radio"></div>
+          <span class="option-emoji">⚡</span>
+          <div><p class="option-text">Less than 5 hours</p><p class="option-sub">I run on very little sleep</p></div>
+        </div>
+        <div class="option" data-value="5_to_6">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🔋</span>
+          <div><p class="option-text">5 – 6 hours</p><p class="option-sub">Short sleeper</p></div>
+        </div>
+        <div class="option" data-value="6_to_7">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌙</span>
+          <div><p class="option-text">6 – 7 hours</p><p class="option-sub">Below average but functional</p></div>
+        </div>
+        <div class="option" data-value="7_to_8">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😴</span>
+          <div><p class="option-text">7 – 8 hours</p><p class="option-sub">Right in the recommended range</p></div>
+        </div>
+        <div class="option" data-value="more_than_8">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🛌</span>
+          <div><p class="option-text">More than 8 hours</p><p class="option-sub">I need a lot of sleep to feel good</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-3">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="step" data-step="4">
+      <p class="step-section-label">Energy Patterns</p>
+      <h2 class="step-question">When are you most mentally sharp?</h2>
+      <p class="step-sub">When do your best ideas come? When could you tackle your hardest problem?</p>
+      <div class="options">
+        <div class="option" data-value="peak_before_8am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌄</span>
+          <div><p class="option-text">Before 8:00 AM</p><p class="option-sub">Dawn is my power hour</p></div>
+        </div>
+        <div class="option" data-value="peak_8_to_10am">
+          <div class="option-radio"></div>
+          <span class="option-emoji">☕</span>
+          <div><p class="option-text">8:00 – 10:00 AM</p><p class="option-sub">Morning momentum builds fast</p></div>
+        </div>
+        <div class="option" data-value="peak_10am_to_12pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🧠</span>
+          <div><p class="option-text">10:00 AM – 12:00 PM</p><p class="option-sub">Mid-morning is my sweet spot</p></div>
+        </div>
+        <div class="option" data-value="peak_12_to_3pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌞</span>
+          <div><p class="option-text">12:00 PM – 3:00 PM</p><p class="option-sub">Afternoon is when I hit my stride</p></div>
+        </div>
+        <div class="option" data-value="peak_after_6pm">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌙</span>
+          <div><p class="option-text">After 6:00 PM</p><p class="option-sub">I come alive in the evening</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-4">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="step" data-step="5">
+      <p class="step-section-label">Energy Patterns</p>
+      <h2 class="step-question">When do you hit your worst energy slump?</h2>
+      <p class="step-sub">That window where focus disappears and everything feels harder.</p>
+      <div class="options">
+        <div class="option" data-value="slump_morning">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😵</span>
+          <div><p class="option-text">Mid-morning (9–11 AM)</p><p class="option-sub">I struggle to get going until late morning</p></div>
+        </div>
+        <div class="option" data-value="slump_early_afternoon">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😪</span>
+          <div><p class="option-text">Early afternoon (1–3 PM)</p><p class="option-sub">The post-lunch crash hits hard</p></div>
+        </div>
+        <div class="option" data-value="slump_late_afternoon">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🥱</span>
+          <div><p class="option-text">Late afternoon (3–5 PM)</p><p class="option-sub">I fade before the day officially ends</p></div>
+        </div>
+        <div class="option" data-value="slump_evening">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌆</span>
+          <div><p class="option-text">Evening (7–9 PM)</p><p class="option-sub">I crash early and can't recover</p></div>
+        </div>
+        <div class="option" data-value="slump_none">
+          <div class="option-radio"></div>
+          <span class="option-emoji">⚡</span>
+          <div><p class="option-text">I don't really get slumps</p><p class="option-sub">My energy is fairly consistent</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-5">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="step" data-step="6">
+      <p class="step-section-label">Energy Patterns</p>
+      <h2 class="step-question">How do you feel in the first 30 minutes after waking?</h2>
+      <p class="step-sub">Without coffee — your honest first-thing-in-the-morning state.</p>
+      <div class="options">
+        <div class="option" data-value="morning_awake_immediately">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🚀</span>
+          <div><p class="option-text">Wide awake immediately</p><p class="option-sub">Alert from the first second</p></div>
+        </div>
+        <div class="option" data-value="morning_alert_soon">
+          <div class="option-radio"></div>
+          <span class="option-emoji">☀️</span>
+          <div><p class="option-text">Alert after about 15 minutes</p><p class="option-sub">A little slow at first, then fine</p></div>
+        </div>
+        <div class="option" data-value="morning_takes_hour">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌤️</span>
+          <div><p class="option-text">Takes about an hour to feel human</p><p class="option-sub">Slow to start but gets there</p></div>
+        </div>
+        <div class="option" data-value="morning_groggy_all_morning">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😩</span>
+          <div><p class="option-text">Groggy for most of the morning</p><p class="option-sub">Mornings are genuinely painful</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-6">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="step" data-step="7">
+      <p class="step-section-label">Lifestyle</p>
+      <h2 class="step-question">How consistent is your sleep schedule?</h2>
+      <p class="step-sub">Across all days including weekends.</p>
+      <div class="options">
+        <div class="option" data-value="consistency_very">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🎯</span>
+          <div><p class="option-text">Very consistent (±30 minutes)</p><p class="option-sub">Same time almost every night</p></div>
+        </div>
+        <div class="option" data-value="consistency_fairly">
+          <div class="option-radio"></div>
+          <span class="option-emoji">📅</span>
+          <div><p class="option-text">Fairly consistent (±1 hour)</p><p class="option-sub">Mostly regular with some variation</p></div>
+        </div>
+        <div class="option" data-value="consistency_variable">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🔀</span>
+          <div><p class="option-text">Somewhat variable</p><p class="option-sub">Weekdays and weekends differ a lot</p></div>
+        </div>
+        <div class="option" data-value="consistency_irregular">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌪️</span>
+          <div><p class="option-text">Highly irregular</p><p class="option-sub">Hard to predict when I'll sleep</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-7">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="step" data-step="8">
+      <p class="step-section-label">Lifestyle</p>
+      <h2 class="step-question">When do you prefer to exercise?</h2>
+      <p class="step-sub">When your body actually wants to move — not when you schedule it out of convenience.</p>
+      <div class="options">
+        <div class="option" data-value="exercise_early_morning">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌅</span>
+          <div><p class="option-text">Early morning (before 8 AM)</p><p class="option-sub">I love the empty gym at 6am</p></div>
+        </div>
+        <div class="option" data-value="exercise_morning">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🏃</span>
+          <div><p class="option-text">Morning (8–11 AM)</p><p class="option-sub">Mid-morning workouts feel best</p></div>
+        </div>
+        <div class="option" data-value="exercise_afternoon">
+          <div class="option-radio"></div>
+          <span class="option-emoji">⚽</span>
+          <div><p class="option-text">Afternoon</p><p class="option-sub">Post-lunch movement</p></div>
+        </div>
+        <div class="option" data-value="exercise_evening">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🏋️</span>
+          <div><p class="option-text">Evening (5–8 PM)</p><p class="option-sub">After-work workouts</p></div>
+        </div>
+        <div class="option" data-value="exercise_late_night">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🌙</span>
+          <div><p class="option-text">Late night</p><p class="option-sub">I prefer exercising when everyone else is asleep</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-8">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="step" data-step="9">
+      <p class="step-section-label">Personality</p>
+      <h2 class="step-question">Which best describes your natural personality?</h2>
+      <p class="step-sub">At your most honest — not what you wish you were.</p>
+      <div class="options">
+        <div class="option" data-value="personality_driven">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🏆</span>
+          <div><p class="option-text">Driven and goal-oriented</p><p class="option-sub">I wake up with a to-do list in my head</p></div>
+        </div>
+        <div class="option" data-value="personality_sociable">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😊</span>
+          <div><p class="option-text">Sociable and easy-going</p><p class="option-sub">I go with the flow and enjoy people</p></div>
+        </div>
+        <div class="option" data-value="personality_creative">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🎨</span>
+          <div><p class="option-text">Creative and introspective</p><p class="option-sub">I do my best thinking when it's quiet</p></div>
+        </div>
+        <div class="option" data-value="personality_anxious">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🔍</span>
+          <div><p class="option-text">Detail-oriented and analytical</p><p class="option-sub">I notice things others miss and worry about them</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-9">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="step" data-step="10">
+      <p class="step-section-label">Personality</p>
+      <h2 class="step-question">On a completely free weekend, when do you wake up?</h2>
+      <p class="step-sub">No plans, no obligations — your body's default weekend mode.</p>
+      <div class="options">
+        <div class="option" data-value="weekend_same_time">
+          <div class="option-radio"></div>
+          <span class="option-emoji">⏰</span>
+          <div><p class="option-text">Same time as weekdays</p><p class="option-sub">My body clock doesn't know it's the weekend</p></div>
+        </div>
+        <div class="option" data-value="weekend_1hr_later">
+          <div class="option-radio"></div>
+          <span class="option-emoji">😌</span>
+          <div><p class="option-text">About 1 hour later</p><p class="option-sub">A small sleep-in feels natural</p></div>
+        </div>
+        <div class="option" data-value="weekend_2hr_later">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🛏️</span>
+          <div><p class="option-text">2+ hours later</p><p class="option-sub">Weekends exist for sleeping in</p></div>
+        </div>
+        <div class="option" data-value="weekend_varies">
+          <div class="option-radio"></div>
+          <span class="option-emoji">🎲</span>
+          <div><p class="option-text">It varies a lot</p><p class="option-sub">No consistent pattern</p></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack()">← Back</button>
+        <button class="btn-next" id="next-10">Next →</button>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+     <div class="step" data-step="11">
+        <p class="step-section-label">Sleep Structure</p>
+        <h2 class="step-question">Do you typically sleep in one block, or two?</h2>
+        <p class="step-sub">Some people naturally prefer a "second sleep" or a dedicated afternoon nap.</p>
+        <div class="options">
+            <div class="option" data-value="monophasic">
+                <div class="option-radio"></div>
+                <span class="option-emoji">🔋</span>
+                <div><p class="option-text">One single block</p><p class="option-sub">I sleep once at night and stay awake all day</p></div>
+            </div>
+            <div class="option" data-value="siesta">
+                <div class="option-radio"></div>
+                <span class="option-emoji">☀️</span>
+                <div><p class="option-text">Night sleep + Afternoon nap</p><p class="option-sub">A 20-90 minute nap is essential for my day</p></div>
+            </div>
+            <div class="option" data-value="biphasic_split">
+                <div class="option-radio"></div>
+                <span class="option-emoji">🌙</span>
+                <div><p class="option-text">Two distinct night blocks</p><p class="option-sub">I often wake up for an hour or two in the middle of the night</p></div>
+            </div>
+            <div class="option" data-value="irregular_naps">
+                <div class="option-radio"></div>
+                <span class="option-emoji">🌀</span>
+                <div><p class="option-text">Multiple irregular naps</p><p class="option-sub">My sleep is scattered throughout the 24-hour cycle</p></div>
+            </div>
+        </div>
+        <div class="nav-row">
+            <button class="btn-back" onclick="goBack()">← Back</button>
+            <button class="btn-submit" id="submitBtn">Discover My Chronotype →</button>
+    </div>
+</div>
+
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="loading-spinner"></div>
+    <p class="loading-title">Analyzing your rhythm...</p>
+    <p class="loading-sub">Cadence is building your personal profile</p>
+  </div>
+
+  <script>
+    const TOTAL_STEPS = 11;
+    let currentStep = 1;
+    const answers = {};
+
+    function updateProgress() {
+      const pct = (currentStep / TOTAL_STEPS) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `${currentStep} of ${TOTAL_STEPS}`;
+    }
+
+    function goBack() {
+      if (currentStep > 1) {
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep--;
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+        updateProgress();
+      }
+    }
+
+    // Wire up option selection for each step
+    for (let s = 1; s <= TOTAL_STEPS; s++) {
+      const step = document.querySelector(`.step[data-step="${s}"]`);
+      const options = step.querySelectorAll('.option');
+      const nextBtn = document.getElementById(`next-${s}`) || document.getElementById('submitBtn');
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          options.forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          answers[`q${s}`] = opt.dataset.value;
+          if (nextBtn) nextBtn.classList.add('enabled');
+        });
+      });
+
+      if (s < TOTAL_STEPS) {
+        const nb = document.getElementById(`next-${s}`);
+        if (nb) {
+          nb.addEventListener('click', () => {
+            if (!nb.classList.contains('enabled')) return;
+            step.classList.remove('active');
+            currentStep++;
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            updateProgress();
+          });
+        }
+      }
+    }
+
+    // Submit
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      if (!document.getElementById('submitBtn').classList.contains('enabled')) return;
+
+      document.getElementById('quizWrap').style.display = 'none';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.getElementById('loadingWrap').classList.add('active');
+
+      const res = await fetch('/quiz/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(answers)
+      });
+      const data = await res.json();
+
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      }
+    });
+  </script>
+<footer class="mt-20 py-12 px-10 border-t border-[var(--border)] text-center">
+    <p class="text-[11px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+        <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-4">
+        <span class="flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span> Supports Apple Health
+        </span>
+        <span class="text-xs text-[var(--muted)]">•</span>
+        <span class="text-xs text-[var(--muted)]">Samsung Health & Google Fit Coming Soon!</span>
+    </div>
+    <div class="mt-8 flex items-center justify-center">
+      <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+        <span class="built-by-inner">
+          <span class="built-by-dot"></span>
+          <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+        </span>
+      </a>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cadence - Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap');
+        
+        body {
+            background-color: #FDFBf7;
+            color: #2c2a28;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .step-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(44, 42, 40, 0.08);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: #F59E0B;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 auto 12px auto;
+        }
+
+        .connector {
+            width: 40px;
+            height: 2px;
+            background: rgba(44, 42, 40, 0.15);
+            align-self: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .connector::after {
+            content: '>';
+            position: absolute;
+            right: -8px;
+            top: 30%;
+            transform: translateY(-50%);
+            color: rgba(44, 42, 40, 0.2);
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(44, 42, 40, 0.2);
+            border-radius: 12px;
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #2c2a28;
+            background: rgba(44, 42, 40, 0.03);
+            box-shadow: 0 12px 30px rgba(44, 42, 40, 0.08);
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #f2a65a 0%, #e38b4f 100%);
+            color: #ffffff;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(135deg, #e59447 0%, #cf7638 100%);
+            box-shadow: 0 12px 30px rgba(227, 139, 79, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .upload-btn:disabled {
+            background: #e6ddd5;
+            color: #9a948e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow:none;
+        }
+
+        #fileInput { display: none; }
+
+        .nav {
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(44, 42, 40, 0.08);
+            display: flex;
+            align-items: center;
+        }
+
+        .brand {
+            font-family: 'Cormorant Garamond', serif;
+            color: #2c2a28;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+        }
+
+        .muted {
+            color: #7a746e;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .built-by-link {
+        text-decoration: none;
+        display: inline-block;
+        }
+
+        .built-by-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        }
+
+        .built-by-inner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+        transition: left 0.5s ease;
+        }
+
+        .built-by-link:hover .built-by-inner::before {
+        left: 100%;
+        }
+
+        .built-by-link:hover .built-by-inner {
+        border-color: var(--accent);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+        transform: translateY(-1px);
+        }
+
+        .built-by-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: pulse-dot 2s ease-in-out infinite;
+        flex-shrink: 0;
+        }
+
+        @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        .built-by-text {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        transition: color 0.3s ease;
+        }
+
+        .built-by-link:hover .built-by-text {
+        color: var(--accent);
+        }
+    </style>
+  </head>
+  <body>
+    <header style="background: #ffffff; border-bottom: 1px solid rgba(44,42,40,0.08); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
+        <a href="/" class="brand">Cadence</a>
+        <nav style="display: flex; gap: 24px;">
+            <a href="/chronotypes" style="color: #7a746e; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.2s;">Chronotypes</a>
+            <a href="/upload" style="color: #e38b4f; text-decoration: none; font-size: 0.85rem; font-weight: 500;">New Upload</a>
+        </nav>
+    </header>
+
+    <div class="max-w-3xl mx-auto px-6 py-16">
+
+        <div class="text-center mb-12">
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 12px;">
+                Upload Your Health Data
+            </h1>
+            <p class="muted" style="font-size: 1.1rem;">
+                Follow the steps below, then drop your file to get started
+            </p>
+        </div>
+
+        <!-- step boxes -->
+         <div style="display:flex; align-items: stretch; gap: 16px; margin-bottom: 48px;">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div style="font-size: 1.5rem; margin-bottom: 8px;">📱</div>
+                <p style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">Open Health App</p>
+                <p class="muted" style="font-size: 0.8rem;">On your iPhone</p>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div style="font-size: 1.5rem; margin-bottom: 8px;">👤</div>
+                <p style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">Tap Your Profile</p>
+                <p class="muted" style="font-size: 0.8rem;">Top right corner</p>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div style="font-size: 1.5rem; margin-bottom: 8px;">📤</div>
+                <p style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">Export All Data</p>
+                <p class="muted" style="font-size: 0.8rem;">Scroll to find Export</p>
+            </div>
+            <div class="connector"></div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <div style="font-size: 1.5rem; margin-bottom: 8px;">📁</div>
+                <p style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">Upload ZIP Here</p>
+                <p class="muted" style="font-size: 0.8rem;">Drop it below</p>
+            </div>
+         </div>
+         <!-- drop zone -->
+          <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size: 2.5rem; margin-bottom: 16px;">↑</div>
+            <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 8px;">Drop your ZIP file here</p>
+            <p class="muted" style="font-size: 0.9rem;">or click to browse</p>
+            <p id="fileName" style="color: #2c2a28; margin-top: 12px; font-size: 0.9rem"></p>
+          </div>
+
+          <input type="file" id="fileInput" accept=".zip" />
+
+          <div class="text-center mt-8">
+            <button class="upload-btn" id="uploadBtn" disabled onclick="uploadFile()">
+                Analyze My Rhythm ->
+            </button>
+            <p id="status" class="muted" style="margin-top: 16px; font-size: 0.9rem;"></p>
+          </div>
+
+          <p style="text-align: center; color: #9a948e; font-size: 0.8rem; margin-top: 24px;">
+            🔒 Your raw health data is never stored. Only computed insights are saved.
+          </p>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileName = document.getElementById('fileName');
+        const status = document.getElementById('status');
+
+        let selectedFile = null;
+
+        fileInput.addEventListener('change', function() {
+            if (this.files[0]) {
+                selectedFile = this.files[0];
+                fileName.textContent = selectedFile.name;
+                uploadBtn.disabled = false;
+            }
+        });
+
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.zip')) {
+                selectedFile = file;
+                fileName.textContent = file.name;
+                uploadBtn.disabled = false;
+            }
+        });
+
+        async function uploadFile() {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            
+            uploadBtn.innerHTML = '<span class="spinner"></span>Analyzing...';
+            
+            status.textContent = 'Parsing your health data - this may take a minute...';
+
+            const formData = new FormData();
+            formData.append('health_file', selectedFile);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    status.textContent = 'Rhythm Found! Redirecting...';
+                    window.location.href = data.redirect;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                status.textContent = 'Something went wrong. Please check your ZIP file and try again.';
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = 'Analyze My Rhythm ->'; 
+            }
+        }
+    </script>
+    <footer class="mt-20 py-12 px-10 border-t border-[var(--border)] text-center">
+        <p class="text-[11px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+            <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-4">
+            <span class="flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span> Supports Apple Health
+            </span>
+            <span class="text-xs text-[var(--muted)]">•</span>
+            <span class="text-xs text-[var(--muted)]">Samsung Health & Google Fit Coming Soon!</span>
+        </div>
+            <div class="mt-8 flex items-center justify-center">
+            <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+                <span class="built-by-inner">
+                <span class="built-by-dot"></span>
+                <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+                </span>
+            </a>
+        </div>
+    </footer>
+  </body>
+</html>

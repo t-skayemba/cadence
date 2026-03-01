@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadence - Your Profile</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>{{ '🦁' if profile.chronotype == 'Lion' else '🐻' if profile.chronotype == 'Bear' else '🐺' if profile.chronotype == 'Wolf' else '🐬' }}</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600;700&display=swap');
+
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+
+    :root {
+      --bg: #f6f2eb;
+      --surface: #ffffff;
+      --accent: #e38b4f;
+      --text: #2c2a28;
+      --muted: #7a746e;
+      --surface-2: color-mix(in srgb, var(--surface) 90%, black 10%);
+      --border: color-mix(in srgb, var(--text) 12%, transparent);
+    }
+
+    .theme-lion {
+      --bg: #efecdd; --surface: #f4f8f1; --accent: #d97706;
+      --text: #3b2a12; --muted: #a16207;
+    }
+    .theme-lion body, body.theme-lion { cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🦁</text></svg>") 16 16, auto; }
+
+    .theme-bear {
+      --bg: #ece6d8; --surface: #f7f2e6; --accent: #5f7d4e;
+      --text: #2e3a2a; --muted: #6b7c64;
+    }
+    .theme-bear body, body.theme-bear { cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐻</text></svg>") 16 16, auto; }
+
+    .theme-wolf {
+      --bg: #e2e4f0; --surface: #f1f2fa; --accent: #4c4f8f;
+      --text: #2b2c40; --muted: #6b6c85;
+    }
+    .theme-wolf body, body.theme-wolf { cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐺</text></svg>") 16 16, auto; }
+
+    .theme-dolphin {
+      --bg: #ddeef4; --surface: #f3fafc; --accent: #3f8fa8;
+      --text: #24333a; --muted: #5c7680;
+    }
+    .theme-dolphin body, body.theme-dolphin { cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewport='0 0 100 100' style='font-size:24px'><text y='50%' x='50%' dominant-baseline='central' text-anchor='middle'>🐬</text></svg>") 16 16, auto; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.5s ease, color 0.5s ease;
+      margin: 0;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .profile-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: visible;
+      border: 2px solid var(--accent);
+      cursor: default;
+      position: relative;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .profile-circle img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-circle:hover {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .biphasic-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: default;
+      position: relative;
+      transition: box-shadow 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .biphasic-circle:hover {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .circle-tooltip {
+      position: absolute;
+      top: calc(100% + 10px);
+      bottom: auto;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--surface);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 200;
+      font-weight: 500;
+    }
+
+    .profile-circle:hover .circle-tooltip,
+    .biphasic-circle:hover .circle-tooltip {
+      opacity: 1;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .header-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .header-nav a:hover { color: var(--accent); }
+
+    .hero {
+      display: flex;
+      min-height: 85vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      width: 50%;
+      padding: 80px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-right {
+      width: 50%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .confidence-circle {
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .confidence-number {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .confidence-label {
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+    }
+
+    .hero-stat-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .hero-stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 40px;
+    }
+
+    .section-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      position: relative;
+      transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      cursor: default;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 15%, transparent);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .stat-card-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .stat-card-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-info {
+      font-size: 0.65rem;
+      color: var(--accent);
+      position: absolute;
+      top: 10px;
+      right: 12px;
+    }
+
+    .stat-card::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: color-mix(in srgb, var(--surface) 85%, var(--accent) 15%);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.6;
+      width: 220px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+      text-align: left;
+      font-weight: normal;
+    }
+
+    .stat-card:hover::after { opacity: 1; }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .chart-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+
+    .rule-item {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .rule-item:last-child { border-bottom: none; }
+
+    .schedule-row {
+      display: flex;
+      gap: 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .schedule-row:last-child { border-bottom: none; }
+
+    .schedule-time {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      width: 76px;
+      flex-shrink: 0;
+    }
+
+    .schedule-activity {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .chat-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 180px;
+      max-height: 300px;
+    }
+
+    .chat-bubble-user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: white;
+      padding: 9px 14px;
+      border-radius: 12px 12px 2px 12px;
+      font-size: 0.88rem;
+      max-width: 82%;
+      line-height: 1.5;
+    }
+
+    .chat-bubble-cadence {
+      align-self: flex-start;
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 9px 14px;
+      border-radius: 12px 12px 12px 2px;
+      font-size: 0.88rem;
+      max-width: 82%;
+      border: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .chat-input-row { display: flex; gap: 8px; }
+
+    .chat-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .chat-input:focus { border-color: var(--accent); }
+
+    .chat-send {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: opacity 0.2s;
+    }
+
+    .chat-send:hover { opacity: 0.85; }
+
+    #heatmap {
+      display: grid;
+      gap: 3px;
+      grid-template-columns: 50px repeat(24, 1fr);
+      min-width: 600px;
+    }
+
+    .built-by-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .built-by-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .built-by-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .built-by-link:hover .built-by-inner::before {
+      left: 100%;
+    }
+
+    .built-by-link:hover .built-by-inner {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .built-by-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .built-by-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    .built-by-link:hover .built-by-text {
+      color: var(--accent);
+    }
+
+    .section { padding: 56px 40px; }
+
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Cadence</a>
+
+    <div class="header-center">
+      <div class="profile-circle">
+        <img src="/static/{{ profile.chronotype | lower }}.png" alt="{{ profile.chronotype }}" />
+        <div class="circle-tooltip">You are a {{ profile.chronotype }}</div>
+      </div>
+      {% if profile.is_biphasic %}
+      <div class="biphasic-circle">
+        B
+        <div class="circle-tooltip">You are a biphasic sleeper</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <nav class="header-nav">
+      <a href="/upload">New Upload</a>
+      <a href="/chronotypes">Chronotypes</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-stats">
+        <div>
+          <p class="hero-stat-label">Chronotype</p>
+          <p class="hero-stat-value">{{ profile.chronotype }}</p>
+        </div>
+        <div>
+          <p class="hero-stat-label">Peak Focus Window</p>
+          <p class="hero-stat-value">{{ profile.peak_focus_window }}</p>
+        </div>
+        <div>
+          <p class="hero-stat-label">Recommended Bedtime</p>
+          <p class="hero-stat-value">{{ profile.recommended_bedtime }}</p>
+        </div>
+        <div class="mb-6 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] inline-block">
+          <div class="flex items-center gap-4">
+            <div id="liveClock" class="text-3xl font-mono font-bold text-[var(--accent)] tracking-tighter">00:00</div>
+            <div class="w-[1px] h-10 bg-[var(--border)]"></div>
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] font-bold">Current Phase</p>
+              <p id="currentPhase" class="text-sm font-semibold text-[var(--text)]">Synchronizing...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="confidence-circle">
+        <span class="confidence-number" id="confNum">0%</span>
+        <span class="confidence-label">Confidence</span>
+      </div>
+      <img src="/static/{{ profile.chronotype | lower }}.png" alt="{{ profile.chronotype }}" />
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  {% if profile.low_confidence %}
+
+  <div style="background: color-mix(in srgb, var(--accent) 10%, var(--bg)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; gap: 16px;">
+    <div style="font-size: 1.5rem;">🌱</div>
+    <div>
+      <p style="font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 4px;">Your rhythm is still emerging</p>
+      <p style="font-size: 0.85rem; color: var(--muted);">{{ profile.low_confidence_explanation }}</p>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div style="display: flex; gap: 32px; align-items: flex-start;">
+      <div style="flex: 1.6; display: flex; flex-direction: column; gap: 20px;">
+        <div class="chart-card" style="opacity: 0.7;">
+          <p class="chart-title">24-Hour Energy Curve <span style="color: var(--accent); font-size: 0.6rem; margin-left: 8px;">LOW CONFIDENCE</span></p>
+          <canvas id="energyChart"></canvas>
+          <p style="font-size: 0.75rem; color: var(--muted); margin-top: 12px; font-style: italic;">Based on limited data — pattern may not reflect your true rhythm.</p>
+        </div>
+        <div class="chart-card" style="opacity: 0.7;">
+          <p class="chart-title">Sleep Duration by Day <span style="color: var(--accent); font-size: 0.6rem; margin-left: 8px;">LOW CONFIDENCE</span></p>
+          <canvas id="sleepChart"></canvas>
+          <p style="font-size: 0.75rem; color: var(--muted); margin-top: 12px; font-style: italic;">Too few sleep records for a reliable pattern.</p>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+        <div class="stat-card" data-tooltip="Based on the limited sleep records available.">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Average Sleep Duration</p>
+          <p class="stat-card-value">{{ profile.avg_duration }} hrs</p>
+        </div>
+        <div class="stat-card" data-tooltip="Based on limited records — may not be fully accurate yet.">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Sleep Consistency</p>
+          <p class="stat-card-value">{{ profile.consistency_score }} / 10</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <p class="section-title">Why Your Rhythm Isn't Clear Yet</p>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px;">
+          <p style="font-size: 0.92rem; color: var(--text); line-height: 1.7;">{{ profile.low_confidence_explanation }}</p>
+        </div>
+        {% if profile.is_biphasic %}
+        <div style="background: color-mix(in srgb, var(--accent) 8%, var(--surface)); border: 1px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin-top: 16px;">
+          <p style="font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 8px;">🌙 You may be a biphasic sleeper</p>
+          <p style="font-size: 0.88rem; color: var(--muted); line-height: 1.7;">Your data shows multiple sleep periods on many days. Biphasic sleep — a main sleep plus a regular nap — is a natural biological pattern. With more data we can confirm this and optimize your nap timing.</p>
+        </div>
+        {% endif %}
+      </div>
+      <div style="flex: 1;">
+        <p class="section-title">Tentative Profile</p>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px;">
+          <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.1em;">Possible Chronotype</p>
+          <p style="font-size: 1.6rem; font-weight: 700; color: var(--text); margin-bottom: 16px;">{{ profile.chronotype }} <span style="font-size: 0.85rem; color: var(--muted); font-weight: 400;">({{ (profile.confidence * 100)|int }}% confidence)</span></p>
+          <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.6;">This is a tentative classification. Run the experiment below and re-upload for a clearer result.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <p class="section-title">Your 2-Week Experiment</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+      {% for step in profile.experiment_protocol %}
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">{{ loop.index }}</div>
+        <p style="font-size: 0.9rem; color: var(--text); line-height: 1.6;">{{ step }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <p class="section-title">Come Back After Your Experiment</p>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+          <p style="font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 20px;">Run the experiment above for 2 weeks, then re-upload your Health data. Most people see a much clearer rhythm emerge after consistent sleep timing.</p>
+          <a href="/upload" style="background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-decoration: none; display: inline-block;">Re-upload After Experiment →</a>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column;">
+        <p class="section-title">Ask Cadence</p>
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chatInput" type="text" placeholder="Ask about your results..." />
+            <button class="chat-send" id="chatSend">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+
+  <div class="section">
+    <div style="display: flex; gap: 32px; align-items: flex-start;">
+      <div style="flex: 1.6; display: flex; flex-direction: column; gap: 20px;">
+        <div class="chart-card">
+          <p class="chart-title">24-Hour Energy Curve</p>
+          <canvas id="energyChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <p class="chart-title">Sleep Duration by Day</p>
+          <canvas id="sleepChart"></canvas>
+        </div>
+      </div>
+
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+        <div class="stat-card"
+          data-tooltip="Your actual average sleep length based on your Health data. This may differ from what you think you're getting.">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Average Sleep Duration</p>
+          <p class="stat-card-value">{{ profile.avg_duration }} hrs</p>
+        </div>
+
+        <div class="stat-card"
+          data-tooltip="How regular your sleep timing is night to night. {% if profile.consistency_score >= 8 %}Your score of {{ profile.consistency_score }} is excellent — your body clock is well anchored.{% elif profile.consistency_score >= 6 %}Your score of {{ profile.consistency_score }} is moderate — some variation in your sleep timing.{% elif profile.consistency_score >= 4 %}Your score of {{ profile.consistency_score }} is low — your bedtime varies significantly.{% else %}Your score of {{ profile.consistency_score }} suggests highly irregular sleep timing.{% endif %}">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Sleep Consistency</p>
+          <p class="stat-card-value">{{ profile.consistency_score }} / 10</p>
+        </div>
+
+        <div class="stat-card"
+          data-tooltip="The time your body naturally ends sleep averaged across your data. Your biological wake time regardless of alarms.">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Natural Wake Time</p>
+          <p class="stat-card-value">{{ profile.natural_wake_time }}</p>
+        </div>
+
+        <div class="stat-card"
+          data-tooltip="Your average bedtime is {{ profile.avg_bedtime }}. Your recommended bedtime is {{ profile.recommended_bedtime }}. {% if profile.avg_bedtime != profile.recommended_bedtime %}Try shifting your bedtime to better align with your natural rhythm.{% else %}You are already sleeping at your ideal time.{% endif %}">
+          <span class="stat-info">ⓘ</span>
+          <p class="stat-card-label">Average Bedtime</p>
+          <p class="stat-card-value">{{ profile.avg_bedtime }}</p>
+        </div>
+
+        {% if profile.is_biphasic %}
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px; margin-top: 4px;">
+          <div class="rule-item" style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Pattern</span>
+            <span style="font-weight: 700; color: var(--text);">Biphasic Sleeper</span>
+          </div>
+          <div class="rule-item" style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Avg Nap Time</span>
+            <span style="font-weight: 700; color: var(--text);">{{ profile.nap_metrics.avg_nap_time if profile.nap_metrics else 'N/A' }}</span>
+          </div>
+          <div class="rule-item" style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Avg Nap Duration</span>
+            <span style="font-weight: 700; color: var(--text);">{{ profile.nap_metrics.avg_nap_duration if profile.nap_metrics else '0' }} min</span>
+          </div>
+          <div class="rule-item">
+            <p style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px;">Best Nap Window</p>
+            <p style="font-weight: 700; font-size: 1.1rem; color: var(--accent);">{{ profile.nap_metrics.avg_nap_time if profile.nap_metrics else 'N/A' }}</p>
+            <p style="font-size: 0.82rem; color: var(--muted); margin-top: 4px;">Based on your historical nap timing. Keep naps to 20–30 min to avoid sleep inertia.</p>
+          </div>
+          <div class="rule-item">
+            <p style="font-size: 0.82rem; color: var(--muted); line-height: 1.7;">Biphasic sleep is a natural biological pattern. Your body prefers a main sleep plus a regular nap — lean into it rather than fighting it.</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <p class="section-title">Recommendations</p>
+        {% for rec in profile.recommendations %}
+          <div class="rec-card">{{ rec }}</div>
+        {% endfor %}
+      </div>
+      <div style="flex: 1;">
+        <p class="section-title">Your Personal Rulebook</p>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px;">
+          {% for rule in profile.rulebook %}
+          <div class="rule-item">{{ rule }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <p class="section-title">Weekly Activity Heatmap</p>
+    <div class="chart-card">
+      <div style="overflow-x: auto;">
+        <div id="heatmap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <p class="section-title">Your Optimized Schedule</p>
+        <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px;">
+          {% for item in profile.schedule %}
+          <div class="schedule-row">
+            <span class="schedule-time">{{ item.time }}</span>
+            <span class="schedule-activity">{{ item.activity }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column;">
+        <p class="section-title">Ask Cadence</p>
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything about your rhythm..." />
+            <button class="chat-send" id="chatSend">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 80px;"></div>
+
+  {% endif %}
+
+  <script>
+    // THEME
+    const chronotype = "{{ profile.chronotype }}".toLowerCase();
+    document.body.classList.add(`theme-${chronotype}`);
+
+    const accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+    const mutedColor = getComputedStyle(document.body).getPropertyValue('--muted').trim();
+
+    function hexToRgb(hex) {
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      return `${r}, ${g}, ${b}`;
+    }
+
+    const accentRgb = hexToRgb(accentColor);
+
+    // CONFIDENCE COUNTER
+    const targetConf = Math.round({{ profile.confidence }} * 100);
+    let current = 0;
+    const counter = setInterval(() => {
+      current += 2;
+      if (current >= targetConf) { current = targetConf; clearInterval(counter); }
+      document.getElementById('confNum').textContent = current + '%';
+    }, 20);
+
+    // ENERGY CURVE — tojson produces valid JS array directly, no JSON.parse needed
+    const distribution = {{ profile.activity_distribution | tojson }};
+    const labels = [];
+    for (let i = 0; i < 24; i++) {
+      const period = i < 12 ? 'AM' : 'PM';
+      const hour = i === 0 ? 12 : i > 12 ? i - 12 : i;
+      labels.push(`${hour}:00 ${period}`);
+    }
+
+    const ctx = document.getElementById('energyChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, `rgba(${accentRgb}, 0.3)`);
+    gradient.addColorStop(1, `rgba(${accentRgb}, 0.01)`);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: distribution,
+          borderColor: accentColor,
+          backgroundColor: gradient,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 2,
+          pointBackgroundColor: accentColor
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+        scales: {
+          x: { ticks: { color: mutedColor, maxTicksLimit: 12 }, grid: { color: mutedColor + '22' } },
+          y: { ticks: { color: mutedColor }, grid: { color: mutedColor + '22' } }
+        }
+      }
+    });
+
+    // SLEEP BY DAY
+    const sleepByDay = {{ profile.sleep_by_day | tojson }};
+
+    new Chart(document.getElementById('sleepChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          data: sleepByDay,
+          backgroundColor: `rgba(${accentRgb}, 0.5)`,
+          borderColor: accentColor,
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: mutedColor }, grid: { color: mutedColor + '22' } },
+          y: {
+            ticks: { color: mutedColor },
+            grid: { color: mutedColor + '22' },
+            title: { display: true, text: 'Hours', color: mutedColor }
+          }
+        }
+      }
+    });
+
+    // HEATMAP
+    const heatmapData = {{ profile.heatmap_data | tojson }};
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const heatmap = document.getElementById('heatmap');
+
+    if (heatmap) {
+      heatmap.appendChild(Object.assign(document.createElement('div'), { style: 'height:22px' }));
+      for (let h = 0; h < 24; h++) {
+        const label = document.createElement('div');
+        label.style.cssText = `font-size:10px; color:${mutedColor}; text-align:center; height:22px; display:flex; align-items:center; justify-content:center;`;
+        label.textContent = h % 3 === 0 ? `${h}` : '';
+        heatmap.appendChild(label);
+      }
+
+      days.forEach((day, di) => {
+        const dayLabel = document.createElement('div');
+        dayLabel.style.cssText = `font-size:11px; color:${mutedColor}; display:flex; align-items:center; height:26px;`;
+        dayLabel.textContent = day;
+        heatmap.appendChild(dayLabel);
+
+        for (let h = 0; h < 24; h++) {
+          const val = heatmapData[di][h];
+          const cell = document.createElement('div');
+          cell.style.cssText = `height:26px; border-radius:3px; background:rgba(${accentRgb},${val});`;
+          cell.title = `${day} ${h}:00 — ${Math.round(val * 100)}% activity`;
+          heatmap.appendChild(cell);
+        }
+      });
+    }
+
+    // CHAT
+    let chatHistory = [];
+
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+
+    if (chatSend) chatSend.addEventListener('click', sendMessage);
+    if (chatInput) chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      if (!input) return;
+      const message = input.value.trim();
+      if (!message) return;
+      input.value = '';
+      appendMessage('user', message);
+      chatHistory.push({ role: 'user', content: message });
+
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: message,
+          profile: {
+            chronotype: "{{ profile.chronotype }}",
+            is_biphasic: {{ 'true' if profile.is_biphasic else 'false' }},
+            quiz_based: {{ 'true' if profile.quiz_based else 'false' }},
+            confidence: {{ profile.confidence }},
+            avg_duration: "{{ profile.avg_duration }} hours",
+            avg_bedtime: "{{ profile.avg_bedtime }}",
+            natural_wake_time: "{{ profile.natural_wake_time }}",
+            recommended_bedtime: "{{ profile.recommended_bedtime }}",
+            consistency_score: "{{ profile.consistency_score }}",
+            peak_focus_window: "{{ profile.peak_focus_window }}",
+            crash_window: "{{ profile.crash_window }}",
+            peak_hour: {{ profile.peak_hour or 0 }},
+            crash_hour: {{ profile.crash_hour or 0 }},
+            nap_start: "{{ profile.nap_metrics.avg_nap_time if profile.is_biphasic and profile.nap_metrics else 'N/A' }}",
+            nap_length: "{{ profile.nap_metrics.avg_nap_duration if profile.is_biphasic and profile.nap_metrics else '0' }} mins",
+            low_confidence: {{ 'true' if profile.low_confidence else 'false' }},
+            low_confidence_explanation: "{{ profile.low_confidence_explanation | replace('"', '\\"') }}"
+          },
+          history: chatHistory
+        })
+      });
+      const data = await res.json();
+      appendMessage('cadence', data.response);
+      chatHistory.push({ role: 'assistant', content: data.response });
+    }
+
+    function appendMessage(role, content) {
+      const messages = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = role === 'user' ? 'chat-bubble-user' : 'chat-bubble-cadence';
+      div.textContent = content;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // RHYTHM CLOCK — uses real peak_hour and crash_hour from biometric data
+    function updateRhythmClock() {
+      const now = new Date();
+      const clockEl = document.getElementById('liveClock');
+      const phaseEl = document.getElementById('currentPhase');
+
+      if (clockEl) {
+        clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      }
+
+      const hours = now.getHours();
+      const peakStart = {{ profile.peak_hour or 10 }};
+      const crashStart = {{ profile.crash_hour or 15 }};
+      const isBiphasic = {{ 'true' if profile.is_biphasic else 'false' }};
+      const napHour = {{ profile.nap_metrics.avg_nap_time | default('2:00 PM') | replace(':', '') | replace(' PM', '') | replace(' AM', '') if profile.is_biphasic and profile.nap_metrics else 14 }};
+      const type = "{{ profile.chronotype }}";
+
+      let phase = "🕯️ Balanced Activity";
+      let desc = "Maintain steady flow until your next shift.";
+
+    const napMetrics = {{ profile.nap_metrics | tojson if profile.nap_metrics else 'null' }};
+    const napStartHour = (() => {
+      if (!isBiphasic || !napMetrics || napMetrics.avg_nap_time === 'No data') return -1;
+      const parts = napMetrics.avg_nap_time.match(/(\d+):(\d+)\s(AM|PM)/);
+      if (!parts) return -1;
+      let h = parseInt(parts[1]);
+      const period = parts[3];
+      if (period === 'PM' && h !== 12) h += 12;
+      if (period === 'AM' && h === 12) h = 0;
+      return h;
+    })();
+    const napDurationHours = (napMetrics && napMetrics.avg_nap_duration) 
+      ? Math.ceil(napMetrics.avg_nap_duration / 60) 
+      : 1;
+
+    if (isBiphasic && napStartHour >= 0 && hours >= napStartHour && hours < (napStartHour + napDurationHours)) {
+      phase = "😴 Scheduled Siesta";
+      desc = `Your nap window — ${napMetrics.avg_nap_duration} min rest to fuel your afternoon.`;
+    } else if (hours >= peakStart && hours < (peakStart + 3)) {
+        phase = "⚡ Your Biometric Peak";
+        desc = "Your activity data shows maximum output now.";
+      } else if (hours >= crashStart && hours < (crashStart + 2)) {
+        phase = "📉 Energy Trough";
+        desc = "Your rhythm typically dips now. Prioritize recovery.";
+      } else if (hours >= 23 || hours < 6) {
+        phase = "🌙 Deep Recharge";
+        desc = "Restorative state for " + type + " recovery.";
+      }
+
+      if (phaseEl) {
+        phaseEl.innerHTML = `${phase}<br><span class="text-[10px] font-normal text-[var(--muted)]">${desc}</span>`;
+      }
+    }
+
+    updateRhythmClock();
+    setInterval(updateRhythmClock, 1000);
+  </script>
+
+  <footer class="mt-20 py-12 px-10 border-t border-[var(--border)] text-center">
+    <p class="text-[11px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+      <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-4">
+      <span class="flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span> Supports Apple Health
+      </span>
+      <span class="text-xs text-[var(--muted)]">•</span>
+      <span class="text-xs text-[var(--muted)]">Samsung Health & Google Fit Coming Soon!</span>
+    </div>
+    <div class="mt-8 flex items-center justify-center">
+      <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+        <span class="built-by-inner">
+          <span class="built-by-dot"></span>
+          <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+        </span>
+      </a>
+    </div>
+  </footer>
+
+</body>
+</html>

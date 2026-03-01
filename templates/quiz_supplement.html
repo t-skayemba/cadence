@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cadence - Tell Us More</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600;700&display=swap');
+
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { background: #f6f2eb; color: #2c2a28; min-height: 100vh; }
+
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(44,42,40,0.12);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      color: #2c2a28;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+    }
+
+    .context-banner {
+      background: color-mix(in srgb, #e38b4f 10%, #f6f2eb);
+      border-bottom: 1px solid rgba(227,139,79,0.2);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .context-banner p { font-size: 0.88rem; color: #7a746e; line-height: 1.6; }
+    .context-banner strong { color: #2c2a28; }
+
+    .skip-link {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: #7a746e;
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(122,116,110,0.3);
+      padding-bottom: 1px;
+      flex-shrink: 0;
+    }
+
+    .skip-link:hover { color: #2c2a28; }
+
+    .progress-wrap {
+      padding: 32px 40px 0;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #7a746e;
+    }
+
+    .progress-bar-outer {
+      height: 3px;
+      background: rgba(44,42,40,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      background: #e38b4f;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .quiz-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    .step { display: none; animation: fadeIn 0.3s ease; }
+    .step.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-section-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e38b4f;
+      margin-bottom: 10px;
+    }
+
+    .step-question {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c2a28;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .step-sub {
+      font-size: 0.88rem;
+      color: #7a746e;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .option {
+      background: #ffffff;
+      border: 1.5px solid rgba(44,42,40,0.12);
+      border-radius: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .option:hover { border-color: #e38b4f; background: #fffaf6; transform: translateX(4px); }
+    .option.selected { border-color: #e38b4f; background: rgba(227,139,79,0.06); }
+
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(44,42,40,0.2);
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option.selected .option-radio { border-color: #e38b4f; background: #e38b4f; }
+    .option.selected .option-radio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+
+    .option-emoji { font-size: 1.1rem; flex-shrink: 0; }
+    .option-text { font-size: 0.92rem; font-weight: 500; color: #2c2a28; }
+    .option-sub { font-size: 0.78rem; color: #7a746e; margin-top: 2px; }
+
+    .nav-row { display: flex; justify-content: space-between; align-items: center; }
+
+    .btn-back {
+      background: none;
+      border: 1.5px solid rgba(44,42,40,0.15);
+      color: #7a746e;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover { border-color: #2c2a28; color: #2c2a28; }
+
+    .btn-next {
+      background: #e38b4f;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-next.enabled { opacity: 1; pointer-events: auto; }
+    .btn-next.enabled:hover { background: #cf7638; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(227,139,79,0.3); }
+
+    .btn-submit {
+      background: #2c2a28;
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-submit.enabled { opacity: 1; pointer-events: auto; }
+    .btn-submit.enabled:hover { background: #1a1816; transform: translateY(-1px); }
+
+    .loading-wrap { display: none; text-align: center; padding: 80px 40px; }
+    .loading-wrap.active { display: block; }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(227,139,79,0.2);
+      border-top-color: #e38b4f;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: #2c2a28; margin-bottom: 8px; }
+    .loading-sub { font-size: 0.88rem; color: #7a746e; }
+
+    .built-by-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .built-by-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .built-by-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .built-by-link:hover .built-by-inner::before {
+      left: 100%;
+    }
+
+    .built-by-link:hover .built-by-inner {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .built-by-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .built-by-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    .built-by-link:hover .built-by-text {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Cadence</a>
+  </header>
+
+  <div class="context-banner">
+    <span style="font-size: 1.4rem;">🌱</span>
+    <p><strong>Your Health data is limited.</strong> Answer 6 quick questions and Cadence can give you a much more accurate profile right now.</p>
+    <a class="skip-link" href="/profile/{{ profile_id }}">Skip, show my data only →</a>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">Supplementing your data</span>
+      <span class="progress-label" id="progressText">1 of 6</span>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar" style="width: 20%"></div>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quizWrap">
+
+    <!-- Q1 -->
+    <div class="step active" data-step="1">
+      <p class="step-section-label">Your rhythm</p>
+      <h2 class="step-question">Without an alarm, when do you naturally wake up?</h2>
+      <p class="step-sub">Your honest preference on a free day.</p>
+      <div class="options">
+        <div class="option" data-value="before_6am"><div class="option-radio"></div><span class="option-emoji">🌅</span><div><p class="option-text">Before 6:00 AM</p></div></div>
+        <div class="option" data-value="6_to_7am"><div class="option-radio"></div><span class="option-emoji">☀️</span><div><p class="option-text">6:00 – 7:00 AM</p></div></div>
+        <div class="option" data-value="7_to_8am"><div class="option-radio"></div><span class="option-emoji">🌤️</span><div><p class="option-text">7:00 – 8:00 AM</p></div></div>
+        <div class="option" data-value="8_to_9am"><div class="option-radio"></div><span class="option-emoji">⛅</span><div><p class="option-text">8:00 – 9:00 AM</p></div></div>
+        <div class="option" data-value="after_9am"><div class="option-radio"></div><span class="option-emoji">🌙</span><div><p class="option-text">After 9:00 AM</p></div></div>
+      </div>
+      <div class="nav-row"><div></div><button class="btn-next" id="next-1">Next →</button></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="step" data-step="2">
+      <p class="step-section-label">Your rhythm</p>
+      <h2 class="step-question">When do you feel most mentally sharp?</h2>
+      <p class="step-sub">Your best hour for hard thinking.</p>
+      <div class="options">
+        <div class="option" data-value="peak_before_8am"><div class="option-radio"></div><span class="option-emoji">🌄</span><div><p class="option-text">Before 8:00 AM</p></div></div>
+        <div class="option" data-value="peak_8_to_10am"><div class="option-radio"></div><span class="option-emoji">☕</span><div><p class="option-text">8:00 – 10:00 AM</p></div></div>
+        <div class="option" data-value="peak_10am_to_12pm"><div class="option-radio"></div><span class="option-emoji">🧠</span><div><p class="option-text">10:00 AM – 12:00 PM</p></div></div>
+        <div class="option" data-value="peak_12_to_3pm"><div class="option-radio"></div><span class="option-emoji">🌞</span><div><p class="option-text">12:00 PM – 3:00 PM</p></div></div>
+        <div class="option" data-value="peak_after_6pm"><div class="option-radio"></div><span class="option-emoji">🌙</span><div><p class="option-text">After 6:00 PM</p></div></div>
+      </div>
+      <div class="nav-row"><button class="btn-back" onclick="goBack()">← Back</button><button class="btn-next" id="next-2">Next →</button></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="step" data-step="3">
+      <p class="step-section-label">Your rhythm</p>
+      <h2 class="step-question">What time do you naturally feel ready for sleep?</h2>
+      <p class="step-sub">When your body actually wants to stop — not when you force it.</p>
+      <div class="options">
+        <div class="option" data-value="before_9pm"><div class="option-radio"></div><span class="option-emoji">🌆</span><div><p class="option-text">Before 9:00 PM</p></div></div>
+        <div class="option" data-value="9_to_10pm"><div class="option-radio"></div><span class="option-emoji">🌇</span><div><p class="option-text">9:00 – 10:00 PM</p></div></div>
+        <div class="option" data-value="10_to_11pm"><div class="option-radio"></div><span class="option-emoji">🌃</span><div><p class="option-text">10:00 – 11:00 PM</p></div></div>
+        <div class="option" data-value="11pm_to_1am"><div class="option-radio"></div><span class="option-emoji">🌉</span><div><p class="option-text">11:00 PM – 1:00 AM</p></div></div>
+        <div class="option" data-value="after_1am"><div class="option-radio"></div><span class="option-emoji">🌌</span><div><p class="option-text">After 1:00 AM</p></div></div>
+      </div>
+      <div class="nav-row"><button class="btn-back" onclick="goBack()">← Back</button><button class="btn-next" id="next-3">Next →</button></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="step" data-step="4">
+      <p class="step-section-label">Your rhythm</p>
+      <h2 class="step-question">How do you feel in the first 30 minutes after waking?</h2>
+      <p class="step-sub">Without coffee — your honest morning state.</p>
+      <div class="options">
+        <div class="option" data-value="morning_awake_immediately"><div class="option-radio"></div><span class="option-emoji">🚀</span><div><p class="option-text">Wide awake immediately</p></div></div>
+        <div class="option" data-value="morning_alert_soon"><div class="option-radio"></div><span class="option-emoji">☀️</span><div><p class="option-text">Alert after about 15 minutes</p></div></div>
+        <div class="option" data-value="morning_takes_hour"><div class="option-radio"></div><span class="option-emoji">🌤️</span><div><p class="option-text">Takes about an hour to feel human</p></div></div>
+        <div class="option" data-value="morning_groggy_all_morning"><div class="option-radio"></div><span class="option-emoji">😩</span><div><p class="option-text">Groggy for most of the morning</p></div></div>
+      </div>
+      <div class="nav-row"><button class="btn-back" onclick="goBack()">← Back</button><button class="btn-next" id="next-4">Next →</button></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="step" data-step="5">
+      <p class="step-section-label">Your rhythm</p>
+      <h2 class="step-question">How consistent is your sleep schedule?</h2>
+      <p class="step-sub">Including weekends.</p>
+      <div class="options">
+        <div class="option" data-value="consistency_very"><div class="option-radio"></div><span class="option-emoji">🎯</span><div><p class="option-text">Very consistent (±30 minutes)</p></div></div>
+        <div class="option" data-value="consistency_fairly"><div class="option-radio"></div><span class="option-emoji">📅</span><div><p class="option-text">Fairly consistent (±1 hour)</p></div></div>
+        <div class="option" data-value="consistency_variable"><div class="option-radio"></div><span class="option-emoji">🔀</span><div><p class="option-text">Somewhat variable</p></div></div>
+        <div class="option" data-value="consistency_irregular"><div class="option-radio"></div><span class="option-emoji">🌪️</span><div><p class="option-text">Highly irregular</p></div></div>
+      </div>
+      <div class="nav-row"><button class="btn-back" onclick="goBack()">← Back</button><button class="btn-next" id="next-5">Next →</button>
+    </div>
+    </div>
+    <!-- Q6 -->
+     <div class="step" data-step="6">
+        <p class="step-section-label">Your rhythm</p>
+        <h2 class="step-question">Do you typically sleep in one block, or two?</h2>
+        <p class="step-sub">Some people naturally prefer a "second sleep" or an afternoon nap.</p>
+        <div class="options">
+        <div class="option" data-value="monophasic">
+            <div class="option-radio"></div>
+            <span class="option-emoji">🔋</span>
+            <div><p class="option-text">One single block</p></div>
+        </div>
+        <div class="option" data-value="siesta">
+            <div class="option-radio"></div>
+            <span class="option-emoji">☀️</span>
+            <div><p class="option-text">Night sleep + Afternoon nap</p></div>
+        </div>
+        <div class="option" data-value="biphasic_split">
+            <div class="option-radio"></div>
+            <span class="option-emoji">🌙</span>
+            <div><p class="option-text">Two distinct night blocks</p></div>
+        </div>
+        <div class="option" data-value="irregular_naps">
+            <div class="option-radio"></div>
+            <span class="option-emoji">🌀</span>
+            <div><p class="option-text">Multiple irregular naps</p></div>
+        </div>
+    </div>
+        <div class="nav-row">
+            <button class="btn-back" onclick="goBack()">← Back</button>
+            <button class="btn-submit" id="submitBtn">Refine My Profile →</button>
+        </div>
+    </div>
+
+  
+
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="loading-spinner"></div>
+    <p class="loading-title">Refining your profile...</p>
+    <p class="loading-sub">Combining your Health data with your answers</p>
+  </div>
+
+  <script>
+    const TOTAL_STEPS = 6;
+    let currentStep = 1;
+    const answers = {};
+    const profileId = "{{ profile_id }}";
+
+    function updateProgress() {
+      const pct = (currentStep / TOTAL_STEPS) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `${currentStep} of ${TOTAL_STEPS}`;
+    }
+
+    function goBack() {
+      if (currentStep > 1) {
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep--;
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+        updateProgress();
+      }
+    }
+
+    for (let s = 1; s <= TOTAL_STEPS; s++) {
+      const step = document.querySelector(`.step[data-step="${s}"]`);
+      const options = step.querySelectorAll('.option');
+      const nextBtn = document.getElementById(`next-${s}`) || document.getElementById('submitBtn');
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          options.forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          answers[`q${s}`] = opt.dataset.value;
+          if (nextBtn) nextBtn.classList.add('enabled');
+        });
+      });
+
+      if (s < TOTAL_STEPS) {
+        const nb = document.getElementById(`next-${s}`);
+        if (nb) {
+          nb.addEventListener('click', () => {
+            if (!nb.classList.contains('enabled')) return;
+            step.classList.remove('active');
+            currentStep++;
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            updateProgress();
+          });
+        }
+      }
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      if (!document.getElementById('submitBtn').classList.contains('enabled')) return;
+
+      document.getElementById('quizWrap').style.display = 'none';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.querySelector('.context-banner').style.display = 'none';
+      document.getElementById('loadingWrap').classList.add('active');
+
+      const res = await fetch('/quiz/supplement/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers, profile_id: profileId })
+      });
+      const data = await res.json();
+      if (data.redirect) window.location.href = data.redirect;
+    });
+  </script>
+<footer class="mt-20 py-12 px-10 border-t border-[var(--border)] text-center">
+    <p class="text-[11px] text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
+        <strong>Disclaimer:</strong> Cadence is an informational tool based on circadian rhythm theory. It is not medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions regarding a medical condition.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-4">
+        <span class="flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span> Supports Apple Health
+        </span>
+        <span class="text-xs text-[var(--muted)]">•</span>
+        <span class="text-xs text-[var(--muted)]">Samsung Health & Google Fit Coming Soon!</span>
+    </div>
+    <div class="mt-8 flex items-center justify-center">
+      <a href="https://github.com/t-skayemba" target="_blank" class="built-by-link">
+        <span class="built-by-inner">
+          <span class="built-by-dot"></span>
+          <span class="built-by-text">Built by Tiana Shashi Kayemba</span>
+        </span>
+      </a>
+    </div>
+</footer>
+</body>
+</html>
