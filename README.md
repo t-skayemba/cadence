@@ -8,7 +8,7 @@ Cadence analyzes your Apple Health data to discover your chronotype - your biolo
 
 ## Try It Live
 
-🚀 **[cadence-chronotype.up.railway.app](cadence-chronotype.up.railway.app)** - no setup required!
+🚀 **[cadence-chronotype.up.railway.app](https://cadence-chronotype.up.railway.app)** - no setup required!
 
 ---
 
