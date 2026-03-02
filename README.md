@@ -63,7 +63,7 @@ cd cadence
 pip3 install -r requirements.txt
 ```
 
-### 3. Set enviornment variables
+### 3. Set environment variables
 
 Get a free API key at [console.groq.com](https://console.groq.com)
 
