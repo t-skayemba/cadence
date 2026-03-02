@@ -93,6 +93,9 @@ def profile_view(profile_id):
     user_profile = Profile.query.get(profile_id)
     if not user_profile:
         return redirect('/upload')
+    
+    if user_profile.user_id != session.get('user_id'):
+        return redirect('/upload')
 
     json_fields = [
         'recommendations',
