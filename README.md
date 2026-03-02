@@ -42,7 +42,7 @@ Upload your Apple Health export and Cadence will:
 
 - **Backend** - Python, Flask, SQLAlchemy, SQLite (local) / PostgreSQL (production)
 - **AI** - Groq AI (LLaMA 3.3 70B) for chronotype classification and chat
-- **Parsing** - Iterative XML parsing for large Apple Health exports (800MB+)
+- **Parsing** - Iterative XML parsing for large Apple Health exports
 - **Frontend** - Vanilla HTML/CSS/JS, Chart.js, Tailwind CSS
 - **Fonts** - Cormorant Garamond + Inter
 
