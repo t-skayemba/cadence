@@ -109,7 +109,6 @@ Sample exports are included in the `test_data/` folder:
 | `wolf_biphasic_medium_naps_medium_confidence.zip` | Wolf + Biphasic |     30 days, medium confidence    |
 |            `bear_medium_confidence.zip`           |       Bear      |     21 days, medium confidence    |
 |            `low_confidence_sparse.zip`            |     Unknown     | Triggers Mode 2 + quiz supplement |
-|           `dolphin_high_confidence.zip`           |     Dolphin     |     90 days, irregular pattern    |
 
 
 ## Project Structure
